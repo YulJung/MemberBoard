@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:input="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8" xmlns:th="http://www.thymeleaf.org">
+    <title>회원가입 페이지</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+    <script>function emailCheck() {
+
+    }
+
+    const memberId = $("#memberId").val();
+        console.log(memberId);
+    </script>
+</head>
+<body>
+<form action="/member/save" method="post" enctype="multipart/form-data">
+    <input type="text" name="memberEmail" id="memberEmail" placeholder="이메일" onkeyup="emailCheck()"><br>
+    <span id="emailCheck"></span>
+    <input type="password" name="memberPassword" id="memberPassword" placeholder="비밀번호"><br>
+    <input type="text" name="memberName" id="memberName" placeholder="이름"><br>
+    <input type="text" name="memberPhone" id="memberPhone" placeholder="전화번호"><br>
+    <input type="file" name="memberProfile" id="memberProfile" placeholder="프로필사진"><br>
+
+    <input type="submit" value="작성하기">
+</form>
+
+</body>
+</html>
