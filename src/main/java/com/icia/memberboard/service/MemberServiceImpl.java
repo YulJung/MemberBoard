@@ -23,6 +23,6 @@ public class MemberServiceImpl implements MemberService{
     @Override
     public boolean login(MemberDetailDTO memberDetailDTO) {
         MemberEntity member = MemberEntity.toMemberLoginEntity(memberDetailDTO);
-        return mr.findOne();
+        return mr.findByMemberEmailAndMemberPassword(member.getMemberEmail(),member.getMemberPassword());
     }
 }
