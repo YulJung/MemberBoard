@@ -1,10 +1,106 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+
 </head>
 <body>
+<table>
+    <thead>
+    <tr>
+        <th>번호</th>
+        <th>제목</th>
+        <th>작성자</th>
+        <th>내용</th>
+        <th>작성시간</th>
+        
+    </tr>
+    </thead>
 
+    <tbody>
+    <tr >
+        <td th:text="${board.boardId}"></td>
+        <td th:text="${board.boardTitle}"></td>
+        <td th:text="${board.memberEmail}"></td>
+        <td th:text="${board.boardDate}"></td>
+        <td th:text="${board.boardContents}"></td>
+        
+
+    </tr>
+    </tbody>
+</table>
+<img th:src="@{|/img/${board.boardFileName}|}" alt="게시글 이미지">
+<div id="writerCheck"  >
+    <input type="hidden" name="memberEmail" id="memberEmail" th:value="${board.memberEmail}">
+    <input type="hidden" name="sessionEmail" id="sessionEmail" th:value="${session.memberEmail}">
+    <a style="visibility: hidden" id="updateBoard" th:href="@{|/board/update/${board.boardId}|}">수정하기</a>
+    <a  style="visibility: hidden" id="deleteBoard" th:href="@{|/board/delete/${board.boardId}|}">삭제하기</a>
+</div>
+<dic id="comment-write">
+
+    <input type="text" name="commentWriter" id="commentWriter" th:value="${session.memberEmail}" readonly>
+    <input type="text" name="commentContents" id="commentContents" placeholder="내용">
+    <button id="comment-write-btn" >댓글등록</button>
+</dic>
+<div id="comment-area">
+    <table>
+        <thead>
+        <tr>
+            <th>댓글번호</th>
+            <th>작성자</th>
+            <th>내용</th>
+            <th>작성시간</th>
+        </tr>
+        </thead>
+        <tbody>
+
+        </tbody>
+
+    </table>
+    <script>
+        $("#comment-write-btn").click(function () {
+            const commentWriter = $("#commentWriter").val();
+            const commentContents = $("commentContents").val();
+            const boardId = '[[${board.boardId}]]';
+            $.ajax({
+                type:'post',
+                url : '/comment/save',
+                data:{
+                    'commentWriter' :commentWriter,
+                    'commentContents': commentContents,
+                    'boardId': boardId
+                },
+                dataType : 'json',
+                success : function (result) {
+                    console.log(result);
+                },
+                error : function () {
+                    alert('ajax실패')
+                }
+            });
+        });
+    </script>
+    <script>
+        window.onload = function writerCheck(){
+
+            const sessionId = $("#sessionEmail").val();
+            const email =  $("#memberEmail").val();
+            console.log(sessionId+"+"+email);
+            const wcDiv = document.getElementById('writerCheck');
+            if(sessionId==email){
+                console.log("작성자일치");
+                document.getElementById('deleteBoard').style.visibility="visible";
+                document.getElementById('updateBoard').style.visibility="visible";
+                // wcDiv.style.visibility='visible';
+            }else if(sessionId=='admin'){
+                // wcDiv.style.visibility='visible';
+                document.getElementById('deleteBoard').style.visibility="visible";
+                document.getElementById('updateBoard').style.visibility="hidden";
+            }
+        }
+    </script>
+</div>
 </body>
 </html>

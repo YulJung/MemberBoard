@@ -1,10 +1,65 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+    <script>
+
+        function deleteById (memberId) {
+            let check = confirm('정말로 삭제하시겠습니까?');
+            console.log(memberId);
+            const reqUrl = "/member/"+memberId;
+            if(check==true){
+            $.ajax({
+                type: 'delete',
+                url: reqUrl,
+                success : function (result){
+                    console.log(result);
+                    location.href='/member/admin';
+                },
+                error: function (){
+                    alert('ajax fail');
+                }
+            });
+            }else{
+                alert("취소하였습니다.");
+            }
+        }
+
+    </script>
 </head>
 <body>
+<header>
+    <a href="/member/logout">로그아웃</a>
+</header>
+<h2>findAll</h2>
+<table>
+    <thead>
+    <tr>
+        <th>번호</th>
+        <th>이메일</th>
+        <th>비밀번호</th>
+        <th>이름</th>
+        <th>조회</th>
+        <th>조회(ajax)</th>
+        <th>삭제(get)</th>
+        <th>삭제(delete)</th>
+    </tr>
+    </thead>
 
+    <tbody>
+    <tr th:each="member: ${memberList}">
+        <td th:text="${member.memberId}">번호</td>
+        <td th:text="${member.memberEmail}">이메일</td>
+        <td th:text="${member.memberPassword}">비밀번호</td>
+        <td th:text="${member.memberName}">이름</td>
+        <td><a th:href="@{|/member/${member.memberId}|}">조회</a> </td>
+        <td><button th:onclick="detail([[${member.memberId}]])">조회(ajax)</button></td>
+        <td> <button th:onclick="deleteById([[${member.memberId}]])">삭제</button></td>
+        <td></td>
+    </tr>
+    </tbody>
+</table>
 </body>
 </html>

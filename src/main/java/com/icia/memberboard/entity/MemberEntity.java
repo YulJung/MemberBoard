@@ -4,6 +4,8 @@ import com.icia.memberboard.dto.MemberDetailDTO;
 import com.icia.memberboard.dto.MemberSaveDTO;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.validator.constraints.UniqueElements;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.*;
 import java.lang.reflect.Member;
@@ -17,14 +19,16 @@ import java.util.List;
 public class MemberEntity extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long memberNo;
+    private Long memberId;
+    @Column(unique = true)
     private String memberEmail;
     private String memberPassword;
     private String memberName;
     private String memberPhone;
     private String memberProfile;
 
-    @OneToMany(mappedBy = "memberEntity",cascade = CascadeType.PERSIST, orphanRemoval = false,fetch = FetchType.LAZY)
+
+    @OneToMany(mappedBy = "memberEntity",cascade = CascadeType.ALL, orphanRemoval = true,fetch = FetchType.LAZY)
     private List<BoardEntity> boardEntityList = new ArrayList<>();
     @OneToMany(mappedBy = "memberEntity",cascade = CascadeType.ALL, orphanRemoval = true,fetch = FetchType.LAZY)
     private List<CommentEntity> commentEntityList = new ArrayList<>();

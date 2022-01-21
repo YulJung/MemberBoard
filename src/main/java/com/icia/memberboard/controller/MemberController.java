@@ -4,13 +4,15 @@ import com.icia.memberboard.dto.MemberDetailDTO;
 import com.icia.memberboard.dto.MemberSaveDTO;
 import com.icia.memberboard.service.MemberService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
@@ -27,13 +29,21 @@ public class MemberController {
     @PostMapping("/login")
     public String login(@ModelAttribute MemberDetailDTO memberDetailDTO, HttpSession session){
         boolean result = ms.login(memberDetailDTO);
-        if(!result) return "redirect:member/login";
+        if(!result) return "redirect:/login";
         else {
             session.setAttribute("memberEmail",memberDetailDTO.getMemberEmail());
-            return "board/findAll";
+            if(memberDetailDTO.getMemberEmail().equals("admin")){
+                return "redirect:/member/admin";
+            }else{
+                return "redirect:/board/findAll";
+            }
 
         }
 
+    }
+    @GetMapping("/admin")
+    public String adminPage(){
+        return "member/admin";
     }
     //로그아웃
     @GetMapping("/logout")
@@ -48,9 +58,28 @@ public class MemberController {
     }
     //회원가입 실행
     @PostMapping("/save")
-    public String save(@ModelAttribute MemberSaveDTO memberSaveDTO){
+    public String save(@ModelAttribute MemberSaveDTO memberSaveDTO) throws IOException {
       ms.save(memberSaveDTO);
       return "member/login";
     }
+    //이메일 중복체크
+    @PostMapping("/emailCheck")
+    public @ResponseBody String emailCheck(@RequestParam("memberEmail")String memberEmail){
+        String result = ms.emailCheck(memberEmail);
+        return result;
+    }
+    //전체 회원 조회
+    @GetMapping("/findAll")
+    public String findAll(Model model){
+        List<MemberDetailDTO> memberList = ms.findAll();
+        model.addAttribute("memberList",memberList);
+        return "member/findAll";
 
+    }
+    //아이디 삭제
+    @DeleteMapping("{memberId}")
+    public ResponseEntity deleteById(@PathVariable Long memberId){
+        ms.delete(memberId);
+        return new ResponseEntity(HttpStatus.OK);
+    }
 }

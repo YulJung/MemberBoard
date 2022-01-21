@@ -12,10 +12,10 @@ import javax.persistence.*;
 public class CommentEntity extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long commentNo;
+    private Long commentId;
     private String commentContents;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "board_No")
+    @JoinColumn(name = "board_id")
     private BoardEntity boardEntity;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_email")

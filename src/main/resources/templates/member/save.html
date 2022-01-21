@@ -5,21 +5,46 @@
     <title>회원가입 페이지</title>
     <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
     <script>function emailCheck() {
+        const email = document.getElementById('memberEmail').value;
+        console.log(email);
+        const checkResult = document.getElementById('emailCheck');
+        $.ajax({
+            type : 'post', // 전송방식(get, post, delete, put 등)
+            url : 'emailCheck', //요청주소 (컨트롤러로 요청하는 주소 )
+            data : {
+                'memberEmail' : email
+            }, // 전송할 데이터, 자바스크립트 객체표현법
+            dataType : 'text', //요청 후 리턴받을 때의 데이터 형식
+            success : function(result) { // 요청이 성공적으로 처리됐을 때 실행할 함수
+                console.log('ajax 성공');
+                console.log(result);
+                if (result == 'ok') {
+                    checkResult.innerHTML = '사용할수 있는 이메일입니다.';
+                    checkResult.style.color = 'green';
+                } else {
 
+                    checkResult.innerHTML = '이미 사용중인 이메일입니다.';
+                    checkResult.style.color = 'red';
+                }
+
+            },
+            error : function() { // 요청이 실패했을 때 실행할 함수
+                console.log('오타 찾으세요');
+
+            }
+        })
     }
 
-    const memberId = $("#memberId").val();
-        console.log(memberId);
     </script>
 </head>
 <body>
 <form action="/member/save" method="post" enctype="multipart/form-data">
-    <input type="text" name="memberEmail" id="memberEmail" placeholder="이메일" onkeyup="emailCheck()"><br>
-    <span id="emailCheck"></span>
+    <input type="text" name="memberEmail" id="memberEmail" placeholder="이메일" onblur="emailCheck()"><br>
+    <span id="emailCheck"></span><Br>
     <input type="password" name="memberPassword" id="memberPassword" placeholder="비밀번호"><br>
     <input type="text" name="memberName" id="memberName" placeholder="이름"><br>
     <input type="text" name="memberPhone" id="memberPhone" placeholder="전화번호"><br>
-    <input type="file" name="memberProfile" id="memberProfile" placeholder="프로필사진"><br>
+    <input type="file" name="memberFile" id="memberFile" placeholder="프로필사진"><br>
 
     <input type="submit" value="작성하기">
 </form>

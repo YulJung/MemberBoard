@@ -1,10 +1,85 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+    <meta charset="UTF-8" >
+    <title>글 목록보기</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+    <script>
+        const detail = (boardId) =>{
+            console.log(boardId);
+            const reqUrl = "/board/"+boardId;
+            $.ajax({
+                type: 'post',
+                url : reqUrl,
+                dataType: 'json',
+                success: function (result){
+                    console.log(result);
+                    let output = "";
+                    output += "<table>\n" +
+                        "    <thead>\n" +
+                        "    <tr>\n" +
+                        "        <th>번호</th>\n" +
+                        "        <th>제목</th>\n" +
+                        "        <th>작성자</th>\n" +
+                        "        <th>내용</th>\n" +
+                        "\n" +
+                        "    </tr>\n" +
+                        "    </thead>\n" +
+                        "\n" +
+                        "    <tbody>\n" +
+                        "    <tr >\n" +
+                        "        <td>"+result.boardId+"</td>\n" +
+                        "        <td >"+result.boardTitle+"</td>\n" +
+                        "        <td >"+result.memberEmail+"</td>\n" +
+                        "        <td >"+result.boardContents+"</td>\n" +
+                        "    </tr>\n" +
+                        "    </tbody>\n" +
+                        "</table>";
+                    document.getElementById("boardDetail").innerHTML = output;
+                },
+                error: function (){
+                    alert('fail ajax');
+                }
+
+            })
+        }
+
+    </script>
 </head>
 <body>
+<header>
+    <a href="/board/save">게시글 쓰기</a> <a href="/member/logout">로그아웃</a>
+</header>
+<table>
+    <thead>
+    <tr>
+        <th>번호</th>
+        <th>제목</th>
+        <th>작성자</th>
+        <th>작성시간</th>
+        <th>조회</th>
 
+    </tr>
+    </thead>
+
+    <tbody>
+    <tr th:each="board:${boardList}">
+        <td th:text="${board.boardId}"></td>
+        <td>
+            <a th:href="@{|/board/${board.boardId}|}">
+                <span  th:text="${board.boardTitle}"></span>
+            </a>
+        </td>
+        <td th:text="${board.memberEmail}"></td>
+        <td th:text="${board.boardDate}"></td>
+        <td><button th:onclick="detail([[${board.boardId}]])">조회(ajax)</button></td>
+        <td></td>
+    </tr>
+    </tbody>
+</table>
+<div id="boardDetail">
+
+
+</div>
 </body>
 </html>
