@@ -69,8 +69,7 @@ public class BoardController {
 //    }
     //수정 파일처리 추가
     @PutMapping("{boardId}")
-    public ResponseEntity updateDo (@PathVariable Long boardId,@RequestPart(value = "key") BoardUpdateDTO boardUpdateDTO,
-                                    @RequestPart(value = "boardFile") MultipartFile file)  throws IOException {
+    public ResponseEntity updateDo (@PathVariable Long boardId,@ModelAttribute BoardUpdateDTO boardUpdateDTO)  throws IOException {
         bs.update(boardUpdateDTO);
         return new ResponseEntity(HttpStatus.OK);
     }

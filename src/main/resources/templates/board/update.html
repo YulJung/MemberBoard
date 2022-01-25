@@ -8,11 +8,11 @@
 <body>
 
 <div id="updateForm">
-    <form action="/board/update" method="post" enctype="multipart/form-data">
+    <form action="/board/update" method="post" enctype="multipart/form-data" id="fileUploadForm">
         작성자:<input type="text" name="memberEmail" id="memberEmail" th:value="${board.memberEmail}" readonly><br>
         제목:<input type="text" name="boardTitle" id="boardTitle" th:value="${board.boardTitle}"><br>
         <input type="hidden" name="boardId" id="boardId" th:value="${board.boardId}">
-        <input type="file" name="boardFile" id="boardFile">
+        <input type="file" name="boardFile" id="boardFile"><br>
         내용:<textarea th:text="${board.boardContents}" name="boardContents" id="boardContents" cols="30" rows="30">
 </textarea><br>
 
@@ -38,21 +38,22 @@
                 //     boardFile : file
                 //
                 // });
-                let data = {
-                    "boardId" : id,
-                    "boardTitle" : title,
-                    "memberEmail": memberEmail,
-                    "boardContents": contents,
-                }
-                let formData = new FormData();
-                formData.append('boardFile', $('#boardFile'));
-                formData.append('key', new Blob([JSON.stringify(data)] , {type: "application/json"}));
+                // let data = {
+                //     "boardId" : id,
+                //     "boardTitle" : title,
+                //     "memberEmail": memberEmail,
+                //     "boardContents": contents,
+                // }
+                let form = $('#fileUploadForm')[0];
+                let data = new FormData(form);
+                // formData.append('boardFile', $('#boardFile'));
+                // formData.append('key', new Blob([JSON.stringify(data)] , {type: "application/json"}));
 
-                console.log(formData);
+                console.log(data);
                 const reqUrl ="/board/"+id;
                 $.ajax({
                     type: 'put', // put :덮어씌우기 patch: 수정이 필요한부분만 바뀜
-                    data: formData,
+                    data: data,
                     url: reqUrl,
                     enctype : 'multipart/form-data',
                     contentType: false,
