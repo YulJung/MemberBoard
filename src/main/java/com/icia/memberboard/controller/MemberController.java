@@ -42,6 +42,7 @@ public class MemberController {
         }
 
     }
+    //관리자 페이지
     @GetMapping("/admin")
     public String adminPage(){
         return "member/admin";
@@ -85,14 +86,14 @@ public class MemberController {
     }
     //마이페이지 호출
     @GetMapping("/mypage/{memberEmail}")
-    public String mypageView(@PathVariable String memberEmail,Model model){
+    public String mypage(@PathVariable String memberEmail,Model model){
         MemberDetailDTO member = ms.findByMemberEmail(memberEmail);
         System.out.println(member.toString()+"member");
         model.addAttribute("member",member );
         return "member/mypage";
     }
     @PostMapping("/update")
-    public String memberUpdate(@ModelAttribute MemberUpdateDTO memberUpdateDTO) throws IOException {
+    public String Update(@ModelAttribute MemberUpdateDTO memberUpdateDTO) throws IOException {
         System.out.println("memberUpdateDTO = " + memberUpdateDTO.toString());
         Long memberId = ms.update(memberUpdateDTO);
         return "redirect:/member/mypage/"+memberUpdateDTO.getMemberEmail();

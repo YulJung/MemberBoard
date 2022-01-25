@@ -39,7 +39,6 @@ public class BoardController {
         return "redirect:/board/";
     }
     //상세조회
-
     @GetMapping("{boardId}")
     public String findById(Model model, @PathVariable Long boardId){
 
@@ -57,19 +56,14 @@ public class BoardController {
     }
     //게시글 수정 페이지 요청
     @GetMapping("update/{boardId}")
-    public String update(Model model,@PathVariable Long boardId){
+    public String updateForm(Model model,@PathVariable Long boardId){
         model.addAttribute("board",bs.findById(boardId));
         return "board/update";
     }
-    //게시글 수정 실행
-//    @PutMapping("{boardId}")
-//    public ResponseEntity updateDo (@RequestBody BoardUpdateDTO boardSaveDTO, @PathVariable Long boardId) throws IOException {
-//         bs.update(boardSaveDTO);
-//        return new ResponseEntity(HttpStatus.OK);
-//    }
+
     //수정 파일처리 추가
     @PutMapping("{boardId}")
-    public ResponseEntity updateDo (@PathVariable Long boardId,@ModelAttribute BoardUpdateDTO boardUpdateDTO)  throws IOException {
+    public ResponseEntity update (@PathVariable Long boardId,@ModelAttribute BoardUpdateDTO boardUpdateDTO)  throws IOException {
         bs.update(boardUpdateDTO);
         return new ResponseEntity(HttpStatus.OK);
     }
@@ -80,11 +74,11 @@ public class BoardController {
 
         List<BoardDetailDTO> bList = bs.search(searchType, keyword);
         model.addAttribute("boardList", bList);
-        return "/board/";
+        return "redirect:/board/";
     }
     //페이징
     @GetMapping
-    public String paging(@PageableDefault(page =1) Pageable pageable, Model model){
+    public String findAll(@PageableDefault(page =1) Pageable pageable, Model model){
         Page<BoardPagingDTO> boardList = bs.paging(pageable);
         model.addAttribute("boardList",boardList);
         int startPage = (((int) (Math.ceil((double) pageable.getPageNumber() / PagingConst.BLOCK_LIMIT))) - 1) * PagingConst.BLOCK_LIMIT + 1;
