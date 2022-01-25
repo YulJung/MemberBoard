@@ -2,6 +2,7 @@ package com.icia.memberboard.controller;
 
 import com.icia.memberboard.dto.MemberDetailDTO;
 import com.icia.memberboard.dto.MemberSaveDTO;
+import com.icia.memberboard.dto.MemberUpdateDTO;
 import com.icia.memberboard.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -35,7 +36,7 @@ public class MemberController {
             if(memberDetailDTO.getMemberEmail().equals("admin")){
                 return "redirect:/member/admin";
             }else{
-                return "redirect:/board/findAll";
+                return "redirect:/board/";
             }
 
         }
@@ -81,5 +82,19 @@ public class MemberController {
     public ResponseEntity deleteById(@PathVariable Long memberId){
         ms.delete(memberId);
         return new ResponseEntity(HttpStatus.OK);
+    }
+    //마이페이지 호출
+    @GetMapping("/mypage/{memberEmail}")
+    public String mypageView(@PathVariable String memberEmail,Model model){
+        MemberDetailDTO member = ms.findByMemberEmail(memberEmail);
+        System.out.println(member.toString()+"member");
+        model.addAttribute("member",member );
+        return "member/mypage";
+    }
+    @PostMapping("/update")
+    public String memberUpdate(@ModelAttribute MemberUpdateDTO memberUpdateDTO) throws IOException {
+        System.out.println("memberUpdateDTO = " + memberUpdateDTO.toString());
+        Long memberId = ms.update(memberUpdateDTO);
+        return "redirect:/member/mypage/"+memberUpdateDTO.getMemberEmail();
     }
 }

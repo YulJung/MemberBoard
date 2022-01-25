@@ -2,6 +2,7 @@ package com.icia.memberboard.entity;
 
 import com.icia.memberboard.dto.MemberDetailDTO;
 import com.icia.memberboard.dto.MemberSaveDTO;
+import com.icia.memberboard.dto.MemberUpdateDTO;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.validator.constraints.UniqueElements;
@@ -28,9 +29,9 @@ public class MemberEntity extends BaseEntity{
     private String memberProfile;
 
 
-    @OneToMany(mappedBy = "memberEntity",cascade = CascadeType.ALL, orphanRemoval = true,fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "memberEntity",cascade = CascadeType.REFRESH, orphanRemoval = true,fetch = FetchType.LAZY)
     private List<BoardEntity> boardEntityList = new ArrayList<>();
-    @OneToMany(mappedBy = "memberEntity",cascade = CascadeType.ALL, orphanRemoval = true,fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "memberEntity",cascade = CascadeType.REFRESH, orphanRemoval = true,fetch = FetchType.LAZY)
     private List<CommentEntity> commentEntityList = new ArrayList<>();
 
     public static MemberEntity toMemberSaveEntity(MemberSaveDTO memberSaveDTO) {
@@ -48,5 +49,16 @@ public class MemberEntity extends BaseEntity{
         member.setMemberEmail(memberDetailDTO.getMemberEmail());
         member.setMemberPassword(memberDetailDTO.getMemberPassword());
         return member;
+    }
+
+    public static MemberEntity toMemberUpdateEntity(MemberUpdateDTO memberUpdateDTO) {
+        MemberEntity memberEntity = new MemberEntity();
+        memberEntity.setMemberId(memberUpdateDTO.getMemberId());
+        memberEntity.setMemberEmail(memberUpdateDTO.getMemberEmail());
+        memberEntity.setMemberPassword(memberUpdateDTO.getMemberPassword());
+        memberEntity.setMemberName(memberUpdateDTO.getMemberName());
+        memberEntity.setMemberPhone(memberUpdateDTO.getMemberPhone());
+        memberEntity.setMemberProfile(memberUpdateDTO.getMemberProfile());
+        return memberEntity;
     }
 }

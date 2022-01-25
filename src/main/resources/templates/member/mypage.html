@@ -2,9 +2,33 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>mypage</title>
 </head>
 <body>
 
+<form onsubmit="return passwordCheck();" action="/member/update" method="post" enctype="multipart/form-data">
+    이메일 :<input type="text" name="memberEmail" id="memberEmail" th:value="${member.memberEmail}" readonly><br>
+    <input type="hidden" name = "memberId" th:value="${member.memberId}">
+    비밀번호 확인:<input type="password" name="memberPassword" id="memberPassword" placeholder="비밀번호"><br>
+    이름 :<input type="text" name="memberName" id="memberName" th:value="${member.memberName}"><br>
+    <input type="hidden" name="memberPW" id="memberPW" th:value="${member.memberPassword}" >
+    전화번호 :<input type="text" name="memberPhone" id="memberPhone" th:value="${member.memberPhone}"><br>
+    첨부파일 :<input type="file" name="memberFile" id="memberFile" placeholder="프로필사진"><br>
+
+    <input type="submit"  value="작성하기">
+    <script>
+        function passwordCheck(){
+            const password = document.getElementById('memberPassword').value;
+            const memberPW = document.getElementById('memberPW').value;
+            if(password==memberPW){
+               return confirm("수정하시겠습니까?");
+
+            }else{
+                alert('비밀번호가 올바르지 않습니다.');
+                return false;
+            }
+        }
+    </script>
+</form>
 </body>
 </html>

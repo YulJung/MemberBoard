@@ -2,6 +2,7 @@ package com.icia.memberboard.service;
 
 import com.icia.memberboard.dto.MemberDetailDTO;
 import com.icia.memberboard.dto.MemberSaveDTO;
+import com.icia.memberboard.dto.MemberUpdateDTO;
 import com.icia.memberboard.entity.MemberEntity;
 import com.icia.memberboard.repository.MemberRepository;
 import lombok.AllArgsConstructor;
@@ -66,4 +67,27 @@ public class MemberServiceImpl implements MemberService{
     public void delete(Long memberId) {
         mr.deleteById(memberId);
     }
+
+    @Override
+    public MemberDetailDTO findByMemberEmail(String memberEmail) {
+        MemberEntity member = mr.findByMemberEmail(memberEmail);
+        System.out.println(member+ "tomemberdetail");
+        return MemberDetailDTO.toMemberDetailDTO(member);
+    }
+
+    @Override
+    public Long update(MemberUpdateDTO memberUpdateDTO) throws IOException {
+        MultipartFile fileName = memberUpdateDTO.getMemberFile();
+        String memberProfile = fileName.getOriginalFilename();
+        memberProfile = System.currentTimeMillis()+"_"+memberProfile;
+        String savePath = "D:\\eclipse\\Spring\\Worksapce\\Spring\\MemberBoard\\src\\main\\resources\\static\\img"+memberProfile;
+        if(!fileName.isEmpty()){
+            fileName.transferTo(new File(savePath));
+        }
+
+        memberUpdateDTO.setMemberProfile(memberProfile);
+        MemberEntity member = MemberEntity.toMemberUpdateEntity(memberUpdateDTO);
+        return mr.save(member).getMemberId();
+    }
+
 }

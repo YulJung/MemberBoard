@@ -1,15 +1,19 @@
 package com.icia.memberboard.controller;
 
-import com.icia.memberboard.dto.BoardDetailDTO;
-import com.icia.memberboard.dto.BoardSaveDTO;
-import com.icia.memberboard.dto.BoardUpdateDTO;
+import com.icia.memberboard.common.PagingConst;
+import com.icia.memberboard.dto.*;
 import com.icia.memberboard.service.BoardService;
+import com.icia.memberboard.service.CommentServiceImpl;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
@@ -20,15 +24,8 @@ import java.util.List;
 @RequestMapping("/board")
 public class BoardController {
     private final BoardService bs;
-    //전체 조회
-    @GetMapping("/findAll")
-    public String findAll(Model model){
+    private final CommentServiceImpl cs;
 
-        List<BoardDetailDTO> boardList = bs.findAll();
-        model.addAttribute("boardList",boardList);
-
-        return "board/findAll";
-    }
     //게시글 저장 폼
     @GetMapping("/save")
     public String saveForm(){
@@ -39,7 +36,7 @@ public class BoardController {
     public String save(@ModelAttribute BoardSaveDTO boardSaveDTO, HttpSession session) throws IOException {
 
         bs.save(boardSaveDTO);
-        return "redirect:/board/findAll";
+        return "redirect:/board/";
     }
     //상세조회
 
@@ -48,13 +45,15 @@ public class BoardController {
 
         BoardDetailDTO board = bs.findById(boardId);
         model.addAttribute("board",board);
+        List<CommentDetailDTO> commentList = cs.findAll(boardId);
+        model.addAttribute("commentList",commentList);
         return "board/detail";
     }
     //게시글 삭제
     @GetMapping("delete/{boardId}")
     public String delete(@PathVariable Long boardId){
         bs.delete(boardId);
-        return "redirect:/board/findAll";
+        return "redirect:/board/";
     }
     //게시글 수정 페이지 요청
     @GetMapping("update/{boardId}")
@@ -63,9 +62,38 @@ public class BoardController {
         return "board/update";
     }
     //게시글 수정 실행
+//    @PutMapping("{boardId}")
+//    public ResponseEntity updateDo (@RequestBody BoardUpdateDTO boardSaveDTO, @PathVariable Long boardId) throws IOException {
+//         bs.update(boardSaveDTO);
+//        return new ResponseEntity(HttpStatus.OK);
+//    }
+    //수정 파일처리 추가
     @PutMapping("{boardId}")
-    public ResponseEntity updateDo (@RequestBody BoardUpdateDTO boardSaveDTO, @PathVariable Long boardId) throws IOException {
-         bs.update(boardSaveDTO);
+    public ResponseEntity updateDo (@PathVariable Long boardId,@RequestPart(value = "key") BoardUpdateDTO boardUpdateDTO,
+                                    @RequestPart(value = "boardFile") MultipartFile file)  throws IOException {
+        bs.update(boardUpdateDTO);
         return new ResponseEntity(HttpStatus.OK);
     }
+    //검색
+    @GetMapping("/search")
+    public String search(@RequestParam("searchType") String searchType, @RequestParam("keyword") String keyword,
+                         Model model) {
+
+        List<BoardDetailDTO> bList = bs.search(searchType, keyword);
+        model.addAttribute("boardList", bList);
+        return "/board/";
+    }
+    //페이징
+    @GetMapping
+    public String paging(@PageableDefault(page =1) Pageable pageable, Model model){
+        Page<BoardPagingDTO> boardList = bs.paging(pageable);
+        model.addAttribute("boardList",boardList);
+        int startPage = (((int) (Math.ceil((double) pageable.getPageNumber() / PagingConst.BLOCK_LIMIT))) - 1) * PagingConst.BLOCK_LIMIT + 1;
+        int endPage = ((startPage+PagingConst.BLOCK_LIMIT-1)<boardList.getTotalPages())?startPage+PagingConst.BLOCK_LIMIT-1 : boardList.getTotalPages();
+
+        model.addAttribute("startPage",startPage);
+        model.addAttribute("endPage",endPage);
+        return "board/paging";
+    }
+
 }

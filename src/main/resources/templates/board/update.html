@@ -3,59 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-    <script>
-        const cancle = ()=>{
-            window.history.back();
-        }
-        const putUpdate = () =>{
-            console.log('put ajax');
-            let id = document.getElementById('boardId').value;
-            let title = document.getElementById('boardTitle').value;
-             let memberEmail = document.getElementById('memberEmail').value;
-            let contents = document.getElementById('boardContents').value;
-
-            //자바스크립트 오브젝트에 담아서 보냄
-            const updateData = JSON.stringify({
-                boardId:id,
-                boardTitle:title,
-                memberEmail: memberEmail,
-                boardContents : contents,
-
-            });
-            console.log(updateData);
-            const reqUrl ="/board/"+id;
-            $.ajax({
-                type: 'put', // put :덮어씌우기 patch: 수정이 필요한부분만 바뀜
-                data: updateData,
-                url: reqUrl,
-                contentType: 'application/json', //json으로 보낼때 사용
-                success: function (){
-                    location.href='/board/'+id;
-                },
-                error(){
-                    alert('ajax fail');
-                }
-            });
-
-
-        }
-
-
-    </script>
+    <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
 </head>
 <body>
 
 <div id="updateForm">
-    <form action="/board/update" method="post">
+    <form action="/board/update" method="post" enctype="multipart/form-data">
         작성자:<input type="text" name="memberEmail" id="memberEmail" th:value="${board.memberEmail}" readonly><br>
         제목:<input type="text" name="boardTitle" id="boardTitle" th:value="${board.boardTitle}"><br>
         <input type="hidden" name="boardId" id="boardId" th:value="${board.boardId}">
+        <input type="file" name="boardFile" id="boardFile">
         내용:<textarea th:text="${board.boardContents}" name="boardContents" id="boardContents" cols="30" rows="30">
 </textarea><br>
 
         <input type="button" value="수정하기" th:onclick="putUpdate()">
         <input type="button" value="수정 취소" th:onclick="cancle()">
+        <script>
+            const cancle = ()=>{
+                window.history.back();
+            }
+            const putUpdate = () =>{
+                console.log('put ajax');
+                let id = document.getElementById('boardId').value;
+                let title = document.getElementById('boardTitle').value;
+                let memberEmail = document.getElementById('memberEmail').value;
+                let contents = document.getElementById('boardContents').value;
+                let file = document.getElementById('boardFile').value;
+                //자바스크립트 오브젝트에 담아서 보냄
+                // const updateData = JSON.stringify({
+                //     boardId:id,
+                //     boardTitle:title,
+                //     memberEmail: memberEmail,
+                //     boardContents : contents,
+                //     boardFile : file
+                //
+                // });
+                let data = {
+                    "boardId" : id,
+                    "boardTitle" : title,
+                    "memberEmail": memberEmail,
+                    "boardContents": contents,
+                }
+                let formData = new FormData();
+                formData.append('boardFile', $('#boardFile'));
+                formData.append('key', new Blob([JSON.stringify(data)] , {type: "application/json"}));
+
+                console.log(formData);
+                const reqUrl ="/board/"+id;
+                $.ajax({
+                    type: 'put', // put :덮어씌우기 patch: 수정이 필요한부분만 바뀜
+                    data: formData,
+                    url: reqUrl,
+                    enctype : 'multipart/form-data',
+                    contentType: false,
+                    processData: false,
+                    success: function (){
+
+                        location.href='/board/'+id;
+                    },
+                    error(){
+                        alert('ajax fail');
+                    }
+                });
+
+
+            }
+
+
+        </script>
     </form>
 </div>
+
 </body>
 </html>

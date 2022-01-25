@@ -32,6 +32,7 @@
     </tbody>
 </table>
 <img th:src="@{|/img/${board.boardFileName}|}" alt="게시글 이미지">
+
 <div id="writerCheck"  >
     <input type="hidden" name="memberEmail" id="memberEmail" th:value="${board.memberEmail}">
     <input type="hidden" name="sessionEmail" id="sessionEmail" th:value="${session.memberEmail}">
@@ -44,7 +45,7 @@
     <input type="text" name="commentContents" id="commentContents" placeholder="내용">
     <button id="comment-write-btn" >댓글등록</button>
 </dic>
-<div id="comment-area">
+<div id="comment-list">
     <table>
         <thead>
         <tr>
@@ -56,25 +57,55 @@
         </thead>
         <tbody>
 
+            <tr th:each="comment:${commentList}">
+                <td th:text="${comment.commentId}"></td>
+                <td th:text="${comment.memberEmail}"></td>
+                <td th:text="${comment.commentContents}"></td>
+                <td th:text="${comment.commentDate}"></td>
+            </tr>
+
         </tbody>
 
     </table>
     <script>
         $("#comment-write-btn").click(function () {
             const commentWriter = $("#commentWriter").val();
-            const commentContents = $("commentContents").val();
+            const commentContents = $("#commentContents").val();
             const boardId = '[[${board.boardId}]]';
+            console.log(commentWriter);
+            console.log(commentContents);
+            console.log(boardId);
             $.ajax({
                 type:'post',
                 url : '/comment/save',
                 data:{
-                    'commentWriter' :commentWriter,
+                    'memberEmail' :commentWriter,
                     'commentContents': commentContents,
                     'boardId': boardId
                 },
                 dataType : 'json',
                 success : function (result) {
                     console.log(result);
+                    let output = "<table class='table'>";
+                    output += "<tr><th>댓글번호</th>";
+                    output += "<th>작성자</th>";
+                    output += "<th>내용</th>";
+                    output += "<th>작성시간</th></tr>";
+                    for(let i in result) {
+                        output += "<tr>";
+                        output += "<td>"+result[i].commentId+"</td>";
+                        output += "<td>"+result[i].memberEmail+"</td>";
+                        output += "<td>"+result[i].commentContents+"</td>";
+
+                        output += "</tr>";
+                    }
+                    // 댓글의 갯수가 여러개인 경우를 대비해 for문 사용
+                    output += "</table>";
+                    // id가 comment-list인 div에 출력
+                    document.getElementById('comment-list').innerHTML = output;
+                    // 댓글작성 완료시 입력창을 비움.
+                    document.getElementById('memberEmail').value='';
+                    document.getElementById('commentContents').value='';
                 },
                 error : function () {
                     alert('ajax실패')

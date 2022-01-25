@@ -1,5 +1,6 @@
 package com.icia.memberboard.entity;
 
+import com.icia.memberboard.dto.CommentSaveDTO;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -22,4 +23,11 @@ public class CommentEntity extends BaseEntity{
     private MemberEntity memberEntity;
 
 
+    public static CommentEntity toCommentEntity(CommentSaveDTO commentSaveDTO,BoardEntity board,MemberEntity member) {
+        CommentEntity comment = new CommentEntity();
+        comment.setCommentContents(commentSaveDTO.getCommentContents());
+        comment.setBoardEntity(board);
+        comment.setMemberEntity(member);
+        return comment;
+    }
 }
