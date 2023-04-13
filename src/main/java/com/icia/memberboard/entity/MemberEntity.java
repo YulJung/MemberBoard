@@ -42,6 +42,7 @@ public class MemberEntity extends BaseEntity{
         memberEntity.setMemberPassword(memberSaveDTO.getMemberPassword());
         memberEntity.setMemberProfile(memberSaveDTO.getMemberProfile());
         return memberEntity;
+     
     }
 
     public static MemberEntity toMemberLoginEntity(MemberDetailDTO memberDetailDTO) {
